@@ -1,0 +1,16 @@
+{
+  "name": "nerd",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alex Dunn <dunn.alex@gmail.com> (https://twitter.com/dunndunndunn)",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^0.18.0",
+    "request": "^2.51.0",
+    "slack-client": "^1.3.1"
+  }
+}

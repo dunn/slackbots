@@ -1,0 +1,22 @@
+{
+  "name": "booksbot",
+  "version": "0.1.0",
+  "description": "libgen in slack",
+  "main": "index.js",
+  "dependencies": {
+    "libgen": "^0.3.5",
+    "natural": "^0.1.29",
+    "slack-client": "^1.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "books",
+    "libgen",
+    "slack"
+  ],
+  "author": "Alex Dunn <dunn.alex@gmail.com> (https://twitter.com/dunndunndunn)",
+  "license": "MIT"
+}

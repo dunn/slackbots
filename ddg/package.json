@@ -1,0 +1,16 @@
+{
+  "name": "ddg-bot",
+  "version": "0.1.0",
+  "description": "",
+  "main": "run_ddg.js",
+  "dependencies": {
+    "ddg": "^0.0.3",
+    "slack-client": "^1.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alex Dunn <dunn.alex@gmail.com> (https://twitter.com/dunndunndunn)",
+  "license": "MIT"
+}
