@@ -58,7 +58,7 @@ slack.on('message', function(message) {
         channel.send('Searching for “' + query + '”…');
         console.log('Searching for “' + query + '”…');
         var libOpts = {
-          // https://github.com/grumble/libgen.js#usage-choosing-a-mirror
+          // https://github.com/dunn/libgen.js#usage-choosing-a-mirror
           // but http://libgen.org is down rn ¯\_(ツ)_/¯
           mirror: 'http://gen.lib.rus.ec',
           query: query,
