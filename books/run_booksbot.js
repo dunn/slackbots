@@ -93,7 +93,7 @@ slack.on('message', function(message) {
 
             if (!similar) {
               if (i > 0) response += ' or ';
-              response += '“' + data[i].Title + '”' +
+              response += '_' + data[i].Title + '_' +
                 ' (http://gen.lib.rus.ec/book/index.php?md5=' +
                 data[i].MD5.toLowerCase() + ')';
             }
