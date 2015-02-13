@@ -14,8 +14,7 @@ var token = require('./secrets.js').slack,
 var slack = new Slack(token,autoReconnect,autoMark);
 
 slack.on('message', function(message) {
-  console.log(message);
-  if (message.text){
+  if (message.type === 'message' && message.text) {
     var channel = slack.getChannelGroupOrDMByID(message.channel);
 
     var isDM = false;
@@ -58,7 +57,7 @@ slack.on('message', function(message) {
         channel.send('Searching for “' + query + '”…');
         console.log('Searching for “' + query + '”…');
         var libOpts = {
-          // https://github.com/grumble/libgen.js#usage-choosing-a-mirror
+          // https://github.com/dunn/libgen.js#usage-choosing-a-mirror
           // but http://libgen.org is down rn ¯\_(ツ)_/¯
           mirror: 'http://gen.lib.rus.ec',
           query: query,
@@ -93,7 +92,7 @@ slack.on('message', function(message) {
 
             if (!similar) {
               if (i > 0) response += ' or ';
-              response += '“' + data[i].Title + '”' +
+              response += '_' + data[i].Title + '_' +
                 ' (http://gen.lib.rus.ec/book/index.php?md5=' +
                 data[i].MD5.toLowerCase() + ')';
             }
