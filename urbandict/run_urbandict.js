@@ -13,15 +13,12 @@ var slack = new Slack(token,autoReconnect,autoMark);
 var resCounter;
 
 slack.on('message', function(message) {
-  // console.log(message);
-  // don't trigger when the bot is invited to a chat
-  if (message.text){
-
+  if (message.type === 'message') {
     var channel = slack.getChannelGroupOrDMByID(message.channel);
 
     var isDM = false;
     // message._client.dms contains all the DM channels the bot is in
-    for (var key in message._client.dms){
+    for (var key in message._client.dms) {
       if (message.channel === key) {
         isDM = true;
         break;
@@ -31,28 +28,28 @@ slack.on('message', function(message) {
     var idIndex = message.text.toLowerCase().indexOf(slack.self.id.toLowerCase());
     startsWithMention = (idIndex === 2)
 
-    if (startsWithMention|| isDM){
+    if (startsWithMention|| isDM) {
       var query;
-      if (isDM){
-        if(startsWithMention){
+      if (isDM) {
+        if(startsWithMention) {
           return channel.send("you don't need to call me by _name_ here!\n This is just b/w us ;-)")
         }
         else{
           query = message.text.trim();
         }
       }
-      else { 
+      else {
         query = message.text.slice(idIndex +
                                     slack.self.id.length + 2).trim();
       }// + 2 because the id is wrapped in <>
 
-      if(query === ""){
+      if(query === "") {
         channel.send('_Nice try, bub. We see what u did there. GIVE US A STRING NEXT TIME._');
       }
-      else if(query === "!next"){
-        lookup.results(function(json){
+      else if(query === "!next") {
+        lookup.results(function(json) {
           resCounter++;
-          if(resCounter >= json.length){
+          if(resCounter >= json.length) {
             channel.send('`No more results, sry bb </3`');
           }
           else{
@@ -68,8 +65,8 @@ slack.on('message', function(message) {
 
         lookup = urban(query)
 
-        lookup.first(function(json){
-          if(json){
+        lookup.first(function(json) {
+          if(json) {
             channel.send(json.definition);
             channel.send("*eg:*  " + json.example)
           }

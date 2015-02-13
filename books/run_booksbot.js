@@ -14,12 +14,12 @@ var token = require('./secrets.js').slack,
 var slack = new Slack(token,autoReconnect,autoMark);
 
 slack.on('message', function(message) {
-  if (message.type === 'message' && message.text) {
+  if (message.type === 'message') {
     var channel = slack.getChannelGroupOrDMByID(message.channel);
 
     var isDM = false;
     // message._client.dms contains all the DM channels the bot is in
-    for (var key in message._client.dms){
+    for (var key in message._client.dms) {
       if (message.channel === key) {
         isDM = true;
         break;
@@ -30,14 +30,14 @@ slack.on('message', function(message) {
     var nameIndex = message.text.toLowerCase().indexOf(slack.self.name.toLowerCase());
     var mentioned = (idIndex > -1 || nameIndex > -1);
 
-    if (mentioned || isDM){
+    if (mentioned || isDM) {
       var string = '';
-      if (idIndex > -1){
+      if (idIndex > -1) {
         // + 2 because the id is wrapped in <>
         string = message.text.slice(idIndex +
                                     slack.self.id.length + 2);
       }
-      else if (nameIndex > -1){
+      else if (nameIndex > -1) {
         string = message.text.slice(nameIndex +
                                     slack.self.name.length + 1);
       }
@@ -48,7 +48,7 @@ slack.on('message', function(message) {
       var query = string.replace(/^\s*/g,"");
       query = string.replace(/\s*$/g,"");
 
-      if (query.length < 4){
+      if (query.length < 4) {
         var oops = 'Queries must be at least 4 characters long!';
         channel.send(oops);
         return console.error(oops);
@@ -64,7 +64,7 @@ slack.on('message', function(message) {
           count: 5
         };
 
-        libgen.search(libOpts, function(err,data){
+        libgen.search(libOpts, function(err,data) {
           if (err) {
             channel.send('`' + err + '`');
             return console.error(err);
@@ -80,7 +80,7 @@ slack.on('message', function(message) {
             if (i > 0) {
               // check all previous titles for similarity
               previous = data.slice(0,i);
-              similar = previous.some(function(value,index,array){
+              similar = previous.some(function(value,index,array) {
                 var sim = (distance(data[i].Title,previous[index].Title) * 10);
                 // don't treat titles as similar to themselves:
                 return (i === index) ? false : sim >= 7;

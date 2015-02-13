@@ -10,12 +10,12 @@ var token = require('./secrets.js').slack,
 var slack = new Slack(token,autoReconnect,autoMark);
 
 slack.on('message', function(message) {
-  if (message.type === 'message' && message.text) {
+  if (message.type === 'message') {
     var channel = slack.getChannelGroupOrDMByID(message.channel);
 
     var isDM = false;
     // message._client.dms contains all the DM channels the bot is in
-    for (var key in message._client.dms){
+    for (var key in message._client.dms) {
       if (message.channel === key) {
         isDM = true;
         break;
@@ -26,14 +26,14 @@ slack.on('message', function(message) {
     var nameIndex = message.text.toLowerCase().indexOf(slack.self.name.toLowerCase());
     var mentioned = (idIndex > -1 || nameIndex > -1);
 
-    if (mentioned || isDM){
+    if (mentioned || isDM) {
       var string = '';
-      if (idIndex > -1){
+      if (idIndex > -1) {
         // + 2 because the id is wrapped in <>
         string = message.text.slice(idIndex +
                                     slack.self.id.length + 2);
       }
-      else if (nameIndex > -1){
+      else if (nameIndex > -1) {
         string = message.text.slice(nameIndex +
                                     slack.self.name.length + 1);
       }
@@ -50,13 +50,13 @@ slack.on('message', function(message) {
         format: 'json'
       };
 
-      ddg.query(query, duckDuckOpts, function(err,data){
+      ddg.query(query, duckDuckOpts, function(err,data) {
         if (err) {
           channel.send('`' + err + '`');
           return console.error(err);
         }
         // console.log(data);
-        if (!data.RelatedTopics.length){
+        if (!data.RelatedTopics.length) {
           channel.send('`No results found!`');
           return new Error('No results found for ' + query);
         }

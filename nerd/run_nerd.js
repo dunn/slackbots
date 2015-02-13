@@ -11,10 +11,10 @@ var token = require('./secrets.js').slack,
 var slack = new Slack(token, autoReconnect, autoMark);
 
 var random = {
-  integer: function(min,max){
+  integer: function(min,max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   },
-  index: function(arr){
+  index: function(arr) {
     var index = Math.floor(arr.length*Math.random());
     return arr[index];
   }
@@ -22,54 +22,54 @@ var random = {
 
 // functions for rendering the card attributes in the mtgapi object
 var attributes = {
-  rarity: function(card){
+  rarity: function(card) {
     return card.rarity;
   },
-  colors: function(card){
+  colors: function(card) {
     return (card.colors ? card.colors.join("-") : "colorless");
   },
-  power: function(card){
+  power: function(card) {
     return (card.power ? card.power : false);
   },
-  toughness: function(card){
+  toughness: function(card) {
     return (card.toughness ? card.toughness : false);
   },
-  supertypes: function(card){
+  supertypes: function(card) {
     if (card.supertypes) {
       return card.supertypes.join(" ");
     }
     else return false;
   },
-  types: function(card){
+  types: function(card) {
     return card.types.join(" ");
   },
-  subtypes: function(card){
+  subtypes: function(card) {
     if (card.subtypes) {
       return card.subtypes.join(" ");
     }
     else return false;
   },
-  set: function(card){
+  set: function(card) {
     return "from " + card.printings[0];
   },
-  manaCost: function(card){
+  manaCost: function(card) {
     return "costing " + card.manaCost;
   },
-  text: function(card){
-    if (card.text && card.text.replace(/\s*/g,"")){
+  text: function(card) {
+    if (card.text && card.text.replace(/\s*/g,"")) {
       return "that reads: “" + card.text + "”";
     }
     else return false;
   },
-  flavor: function(card){
-    if (card.flavor && card.flavor.replace(/\s*/g,"")){
+  flavor: function(card) {
+    if (card.flavor && card.flavor.replace(/\s*/g,"")) {
       return "whose flavor text is “" + card.flavor + "”";
     }
     else return false;
   }
 };
 
-function ngrams(array,n){
+function ngrams(array,n) {
 // Adapted from Natural
 // (https://github.com/NaturalNode/natural/blob/master/lib/natural/ngrams/ngrams.js#L45):
 // copyright (c) 2011, Rob Ellis, Chris Umbel
@@ -82,14 +82,14 @@ function ngrams(array,n){
   return result;
 }
 
-function info(pick,callback){
+function info(pick,callback) {
   var query = "http://magiccards.info/query?q=" +
         // '+l%3Aen' specifies English-language results
         pick + "+l%3Aen&v=card&s=cname";
   // run an search on magiccards.info and pluck a random result
-  request({url: query}, function(err,response,body){
+  request({url: query}, function(err,response,body) {
     if (err) return callback(err);
-    if (body.match("Your query did not match any cards.")){
+    if (body.match("Your query did not match any cards.")) {
       return callback(new Error('No results for ' + pick));
     }
     var $ = cheerio.load(body);
@@ -120,7 +120,7 @@ function info(pick,callback){
 var currentCard = {};
 
 slack.on('message', function(message) {
-  if (message.type === 'message' && message.text) {
+  if (message.type === 'message') {
     var channel = slack.getChannelGroupOrDMByID(message.channel);
 
     // keep a separate record for each channel the bot is in
@@ -128,7 +128,7 @@ slack.on('message', function(message) {
       currentCard[message.channel] = {};
     }
 
-    if (currentCard[message.channel].time){
+    if (currentCard[message.channel].time) {
       var diff = Date.now() - currentCard[message.channel].time;
       // if five minutes have elapsed and the card name hasn't been
       // guessed, reset
@@ -141,7 +141,7 @@ slack.on('message', function(message) {
     if (currentCard[message.channel].name) {
       currentCard[message.channel].name = currentCard[message.channel].name.toLowerCase();
       var answer = message.text.toLowerCase().indexOf(currentCard[message.channel].name);
-      if (answer > -1){
+      if (answer > -1) {
         channel.send('HELL YEAH OH YEAH ' + currentCard[message.channel].url);
         currentCard[message.channel] = {};
       }
@@ -152,7 +152,7 @@ slack.on('message', function(message) {
       var tokens = message.text.split(" ");
 
       var pick = '';
-      if (tokens.length > 1){
+      if (tokens.length > 1) {
         var bigrams = ngrams(tokens,2);
         pick = random.index(bigrams).join(" ");
       }
@@ -160,7 +160,7 @@ slack.on('message', function(message) {
         pick = message.text;
       }
 
-      info(pick, function(err,card){
+      info(pick, function(err,card) {
         if (err) return err;
 
         var path = card.href.replace(/html/,"jpg");
@@ -170,11 +170,11 @@ slack.on('message', function(message) {
         var apiQuery = 'http://api.mtgapi.com/v2/cards?name=' +
               encodeURIComponent(card.name);
 
-        request({url: apiQuery}, function(err,response,body){
+        request({url: apiQuery}, function(err,response,body) {
           if (err) return err;
           var json = JSON.parse(body);
 
-          if (!json.cards){
+          if (!json.cards) {
             console.log(json);
             return new Error('Bad API response');
           }
@@ -206,7 +206,7 @@ slack.on('message', function(message) {
             reply += " ";
 
             if (card.power && card.toughness &&
-                random.integer(0,1) === 1){
+                random.integer(0,1) === 1) {
               var pt = [
                 attributes.power(card),
                 attributes.toughness(card)
@@ -216,12 +216,12 @@ slack.on('message', function(message) {
             }
 
             var supType = attributes.supertypes(card);
-            if (supType && random.integer(0,1) === 1){
+            if (supType && random.integer(0,1) === 1) {
               reply += supType + " ";
             }
 
             var subType = attributes.subtypes(card);
-            if (subType && random.integer(0,1) === 1){
+            if (subType && random.integer(0,1) === 1) {
               reply += subType + " ";
             }
 
@@ -242,7 +242,7 @@ slack.on('message', function(message) {
             }
 
             // var flavor = attributes.flavor(card);
-            // if (flavor && random.integer(0,2) === 1){
+            // if (flavor && random.integer(0,2) === 1) {
             //   reply += flavor;
             // }
 
