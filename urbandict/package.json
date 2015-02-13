@@ -1,0 +1,16 @@
+{
+  "name": "urbandict-bot",
+  "version": "0.1.0",
+  "description": "",
+  "main": "run_urbandict.js",
+  "dependencies": {
+    "urban": "^0.2.3",
+    "slack-client": "^1.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nat Morcos <nat.morcos@gmail.com> (https://twitter.com/morcoswins)",
+  "license": "MIT"
+}
