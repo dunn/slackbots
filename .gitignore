@@ -3,5 +3,5 @@
 */secrets.js
 
 # carry ur own baggage plz
-*/node_modules
+node_modules
 npm-debug.log
