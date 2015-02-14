@@ -10,7 +10,7 @@ var token = require('./secrets.js').slack,
 var slack = new Slack(token,autoReconnect,autoMark);
 
 slack.on('message', function(message) {
-  if (message.type === 'message') {
+  if (message.type === 'message' && message.text) {
     var channel = slack.getChannelGroupOrDMByID(message.channel);
 
     var isDM = false;

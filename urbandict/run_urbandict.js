@@ -13,7 +13,7 @@ var slack = new Slack(token,autoReconnect,autoMark);
 var resCounter;
 
 slack.on('message', function(message) {
-  if (message.type === 'message') {
+  if (message.type === 'message' && message.text) {
     var channel = slack.getChannelGroupOrDMByID(message.channel);
 
     var isDM = false;

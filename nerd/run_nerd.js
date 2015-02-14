@@ -120,7 +120,7 @@ function info(pick,callback) {
 var currentCard = {};
 
 slack.on('message', function(message) {
-  if (message.type === 'message') {
+  if (message.type === 'message' && message.text) {
     var channel = slack.getChannelGroupOrDMByID(message.channel);
 
     // keep a separate record for each channel the bot is in
