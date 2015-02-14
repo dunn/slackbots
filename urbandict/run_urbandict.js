@@ -9,7 +9,6 @@ var token = require('./secrets.js').slack,
 
 var slack = new Slack(token,autoReconnect,autoMark);
 
-
 var resCounter;
 
 slack.on('message', function(message) {
@@ -26,13 +25,13 @@ slack.on('message', function(message) {
     }
 
     var idIndex = message.text.toLowerCase().indexOf(slack.self.id.toLowerCase());
-    startsWithMention = (idIndex === 2)
+    var startsWithMention = (idIndex === 2);
 
     if (startsWithMention|| isDM) {
       var query;
       if (isDM) {
         if(startsWithMention) {
-          return channel.send("you don't need to call me by _name_ here!\n This is just b/w us ;-)")
+          return channel.send("you don't need to call me by _name_ here!\n This is just b/w us ;-)");
         }
         else{
           query = message.text.trim();
@@ -43,10 +42,10 @@ slack.on('message', function(message) {
                                     slack.self.id.length + 2).trim();
       }// + 2 because the id is wrapped in <>
 
-      if(query === "") {
+      if (query === "") {
         channel.send('_Nice try, bub. We see what u did there. GIVE US A STRING NEXT TIME._');
       }
-      else if(query === "!next") {
+      else if (query === "!next") {
         lookup.results(function(json) {
           resCounter++;
           if(resCounter >= json.length) {
@@ -54,7 +53,7 @@ slack.on('message', function(message) {
           }
           else{
             channel.send(json[resCounter].definition);
-            channel.send("*eg:*  " + json[resCounter].example)
+            channel.send("*eg:*  " + json[resCounter].example);
           }
         });
       }
@@ -63,12 +62,12 @@ slack.on('message', function(message) {
         channel.send('Searching for “' + query + '”…');
         console.log('Searching for “' + query + '”…');
 
-        lookup = urban(query)
+        var lookup = urban(query);
 
         lookup.first(function(json) {
           if(json) {
             channel.send(json.definition);
-            channel.send("*eg:*  " + json.example)
+            channel.send("*eg:*  " + json.example);
           }
           else{
             channel.send("`Sry, we couldn't find that :'(`");
