@@ -10,6 +10,10 @@ var token = require('./secrets.js').slack,
 
 var slack = new Slack(token, autoReconnect, autoMark);
 
+var blacklist = [
+  'Our Market Research Shows That Players Like Really Long Card Names So We Made this Card to Have the Absolute Longest Card Name Ever Elemental'
+];
+
 var random = {
   integer: function(min,max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -97,15 +101,22 @@ function info(pick,callback) {
 
     var results = $('table[align=center]');
     // the first centered table is not part of the search results
-    var randomPick = random.integer(1, results.length - 1);
-    var selection = results.eq(randomPick).children().first().children().eq(1).children().first(); // lol
 
-    // remove whitespace and linebreaks
-    var mtgName = selection.text().replace(/\\\\n/g,"");
-    mtgName = mtgName.replace(/^\s*/g,"");
-    mtgName = mtgName.replace(/\s*$/g,"");
+    var mtgName, href;
+    var isBlacklisted = blacklist.some(function(value,index,array){
+      return value === mtgName;
+    });
+    while (!mtgName || isBlacklisted) {
+      var randomPick = random.integer(1, results.length - 1);
+      var selection = results.eq(randomPick).children().first().children().eq(1).children().first(); // lol
 
-    var href = selection.children().first().attr('href');
+      // remove whitespace and linebreaks
+      mtgName = selection.text().replace(/\\\\n/g,"");
+      mtgName = mtgName.replace(/^\s*/g,"");
+      mtgName = mtgName.replace(/\s*$/g,"");
+
+      href = selection.children().first().attr('href');
+    }
 
     if (mtgName && href) {
       return callback(null,{name: mtgName, href: href});
