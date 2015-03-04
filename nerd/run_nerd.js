@@ -102,10 +102,7 @@ function info(pick,callback) {
     var results = $('table[align=center]');
     // the first centered table is not part of the search results
 
-    var mtgName, href;
-    var isBlacklisted = blacklist.some(function(value,index,array){
-      return value === mtgName;
-    });
+    var mtgName, href, isBlacklisted;
     while (!mtgName || isBlacklisted) {
       var randomPick = random.integer(1, results.length - 1);
       var selection = results.eq(randomPick).children().first().children().eq(1).children().first(); // lol
@@ -116,6 +113,10 @@ function info(pick,callback) {
       mtgName = mtgName.replace(/\s*$/g,"");
 
       href = selection.children().first().attr('href');
+
+      isBlacklisted = blacklist.some(function(value,index,array){
+        return value === mtgName;
+      });
     }
 
     if (mtgName && href) {
