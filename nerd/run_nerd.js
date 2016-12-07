@@ -14,7 +14,7 @@ const random = {
     return Math.floor(Math.random() * (max - min + 1)) + min
   },
   index: function(arr) {
-    var index = Math.floor(arr.length*Math.random())
+    const index = Math.floor(arr.length*Math.random())
     return arr[index]
   }
 }
@@ -65,10 +65,10 @@ function ngrams(array, n) {
 // Adapted from Natural
 // (https://github.com/NaturalNode/natural/blob/master/lib/natural/ngrams/ngrams.js#L45):
 // copyright (c) 2011, Rob Ellis, Chris Umbel
-  var result = []
+  let result = []
   const count = array.length - n + 1
 
-  for (var i = 0; i < count; i++)
+  for (let i = 0; i < count; i++)
     result.push(array.slice(i, i + n))
 
   return result
@@ -97,7 +97,7 @@ function info(pick, callback) {
     // the first centered table is not part of the search results
     const results = $('table[align=center]')
 
-    var mtgName, href, isBlacklisted
+    let mtgName, href, isBlacklisted
 
     const randomPick = random.integer(1, results.length - 1)
     const selection = results.eq(randomPick).children().first().children().eq(1).children().first() // lol
@@ -212,39 +212,34 @@ rtm.on('message', (message) => {
         let reply = `${random.index(introductions)} ${attributes.colors(card)} `
 
         if (card.power && card.toughness && random.integer(0,1) === 1) {
-          var pt = [
+          const pt = [
             attributes.power(card),
             attributes.toughness(card)
           ].join("/")
           reply += `${pt} `
         }
 
-        var supType = attributes.supertypes(card)
+        const supType = attributes.supertypes(card)
         if (supType && random.integer(0,1) === 1) {
           reply += `${supType} `
         }
 
-        var subType = attributes.subtypes(card)
+        const subType = attributes.subtypes(card)
         if (subType && random.integer(0,1) === 1) {
           reply += `${subType} `
         }
 
         reply += `${attributes.types(card)} `
 
-        var misc2 = [
+        const misc = [
           attributes.set(card),
           attributes.manaCost(card)
         ]
-        reply += `${random.index(misc2)} `
+        reply += `${random.index(misc)} `
 
-        var text = attributes.text(card)
+        const text = attributes.text(card)
         if (text)
           reply += `${text} `
-
-        // var flavor = attributes.flavor(card)
-        // if (flavor && random.integer(0,2) === 1) {
-        //   reply += flavor
-        // }
 
         console.log(`${reply} (${card.name})`)
         return rtm.sendMessage(reply, message.channel)
