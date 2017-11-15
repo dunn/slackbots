@@ -6,7 +6,7 @@ const secrets = require('../config/secrets.json')
 
 // @param [String] action Either 'add' or 'remove'
 // @param [Array]
-module.exports = function (action, list) {
+module.exports = function (action, list, callback) {
   const opts = {
     url: `https://api.twitch.tv/kraken/users?login=${list.join(',')}`,
     headers: {
@@ -17,7 +17,7 @@ module.exports = function (action, list) {
 
   request(opts, (err, response, body) => {
     if (err)
-      return console.error(err);
+      return callback(err);
 
     const ids = JSON.parse(body)["users"].map((value, index, array) => { return value["_id"] })
     const command = (action === "add" ? "sadd" : "srem")
@@ -37,9 +37,9 @@ module.exports = function (action, list) {
       // done
       (err) => {
         if (err)
-          return console.error(err)
+          return callback(err)
 
-        return true
+        return callback(null)
       })
   })
 }
