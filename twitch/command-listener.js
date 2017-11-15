@@ -1,49 +1,29 @@
-const async = require('async')
-const request = require('request')
-const redis = require('redis').createClient()
+const express = require('express')
+const app = express()
 
-const twitch_client = require('./config/secrets.json').twitch.client_id
-const TOKEN = require('./config/secrets.json').slack.token
-const rtm = new require('@slack/client').RtmClient(TOKEN)
+// http://expressjs.com/en/4x/api.html#req.body
+const bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({ extended: true }))
 
-rtm.start()
+app.post('/watch', watchUsers)
+app.post('/unwatch', unwatchUsers)
 
-// @param [String] action Either 'add' or 'remove'
-// @param [Array]
-function editUsers(action, list) {
-  const opts = {
-    url: `https://api.twitch.tv/kraken/users?login=${list.join(',')}`,
-    headers: {
-      "Accept": "application/vnd.twitchtv.v5+json",
-      "Client-ID": twitch_client
-    }
-  }
+const PORT = 3000
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`)
+});
 
-  request(opts, (err, response, body) => {
-    if (err)
-      return console.error(err);
+const editUsers = require('./lib/edit_users.js')
 
-    const ids = body["users"].map((value, index, array) => { return value["_id"] })
-    const command = (action === "add" ? "sadd" : "srem")
+function watchUsers(req, res) {
+  const util = require('util')
+  console.log(util.inspect(req))
 
-    return async.each(
-      // list of Twitch IDs corresponding to the users given
-      ids,
-      // Either add or remove them from the redis set
-      function (user, callback) {
-        redis[command]('twitch:ids', user, (err, result) => {
-          if (err)
-            return callback(err)
+  const users = req.body.text.split(' ')
+  editUsers('add', users)
+}
 
-          return callback(null)
-        })
-      },
-      // done
-      (err) => {
-        if (err)
-          return console.error(err)
-
-        return true
-      })
-  })
+function unwatchUsers(req, res) {
+  const users = req.body.text.split(' ')
+  editUsers('remove', users)
 }
