@@ -18,10 +18,9 @@ app.listen(PORT, () => {
 });
 
 function watchUsers(req, res) {
-  // const util = require('util')
-  // console.log(util.inspect(req))
-
   const users = req.body.text.split(' ')
+        .map(value => { return value.replace(',', '') })
+
   editUsers('add', users, (err) => {
     if (err) {
       console.error(err)
