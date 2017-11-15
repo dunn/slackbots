@@ -4,20 +4,21 @@ const redis = require('redis').createClient()
 
 const twitch_client = require('./config/secrets.json').twitch.client_id
 const slack_token = require('./config/secrets.json').slack.token
-const rtm = new(require('@slack/client').RtmClient)(slack_token)
 const web = new(require('@slack/client').WebClient)(slack_token)
-
-rtm.start()
 
 redis.smembers('twitch:ids', (err, twitch_ids) => {
   if (err)
     return console.error(err)
 
-  async.map(twitch_ids, getStream, (err, results) => {
+  return async.map(twitch_ids, getStream, (err, results) => {
     if (err)
       return console.error(err)
 
-    async.each(results, updateStreamStatus, (err) => {
+    return async.each(results, saveStreamStatus, (err) => {
+      if (err)
+        return console.error(err)
+
+      return redis.quit()
     })
   })
 })
@@ -31,7 +32,7 @@ function getStream(id, callback) {
     }
   }
 
-  request(opts, (err, response, body) => {
+  return request(opts, (err, response, body) => {
     if (err)
       return callback(err)
 
@@ -45,30 +46,46 @@ function getStream(id, callback) {
   })
 }
 
-function updateStreamStatus(stream, callback) {
-  redis.get(stream["id"], (err, last_status) => {
+function saveStreamStatus(stream, callback) {
+  return updateStreamStatus(stream, (err, new_status) => {
     if (err)
       return callback(err)
 
-    const posting_channels = web.channels.list((err, info) => {
-      info.channels.filter(value => { return value.is_member })
-        .map(value => { return value.id })
+    return redis.set(stream["id"], new_status, (err, result) => {
+      if (err)
+        return callback(err)
+
+      console.log(`Set ${stream["id"]} to ${new_status}`)
+      return callback(null)
     })
+  })
+}
 
-    // do nothing if they aren't streaming
+function updateStreamStatus(stream, callback) {
+  return redis.get(stream["id"], (err, last_status) => {
+    if (err)
+      return callback(err)
+
+    const new_status = (stream["stream"] === null ? "0" : "1")
+
+    // return if they're not streaming
     if (stream["stream"] === null)
-      return callback(null)
+      return callback(null, new_status)
 
-    // do nothing if they're still streaming
+    // return if they're still streaming
     if (stream["stream"] !== null && last_status === "1")
-      return callback(null)
+      return callback(null, new_status)
 
-    const username = stream["channel"]["display_name"].toLowerCase()
-    const game = stream["channel"]["game"].toLowerCase()
-    const url = stream["channel"]["url"]
+    const username = stream["stream"]["channel"]["display_name"].toLowerCase()
+    const game = stream["stream"]["channel"]["game"].toLowerCase()
+    const url = stream["stream"]["channel"]["url"]
 
-    return posting_channels.forEach(value => {
-      rtm.sendMessage(`${username} just started streaming ${game}: ${url}`, value)
+    return web.channels.list((err, info) => {
+      info.channels.filter(value => { return value.is_member }).forEach(value => {
+        web.chat.postMessage(value.id, `btw ${username} just started streaming ${game} ${url}`)
+
+        return callback(null, new_status)
+      })
     })
   })
 }
