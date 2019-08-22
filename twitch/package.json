@@ -17,11 +17,10 @@
   },
   "homepage": "https://github.com/dunn/slackbots#readme",
   "dependencies": {
-    "@slack/client": "^3.14.1",
-    "async": "^2.6.0",
-    "body-parser": "^1.18.2",
-    "express": "^4.16.2",
+    "async": "^2.6.3",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
     "redis": "^2.8.0",
-    "request": "^2.83.0"
+    "request": "^2.88.0"
   }
 }
