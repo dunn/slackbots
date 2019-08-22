@@ -4,7 +4,9 @@ const redis = require('redis').createClient()
 
 const twitch_client = require('./config/secrets.json').twitch.client_id
 const slack_token = require('./config/secrets.json').slack.token
-const web = new(require('@slack/client').WebClient)(slack_token)
+
+const { WebClient } = require('@slack/web-api')
+const web = new WebClient(slack_token)
 
 redis.smembers('twitch:ids', (err, twitch_ids) => {
   if (err)
